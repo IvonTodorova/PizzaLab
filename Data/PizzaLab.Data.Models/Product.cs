@@ -1,4 +1,5 @@
-﻿using PizzaLab.Data.PizzaLab.Data.Models.Enums;
+﻿using PizzaLab.Data.Common.Models;
+using PizzaLab.Data.PizzaLab.Data.Models.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace PizzaLab.Data.PizzaLab.Data.Models
 {
-    public class Product
+    public class Product:BaseDeletableModel<int>
     {
         public Product()
         {
-            ProductsIngridients = new HashSet<ProductsIngridients>();
-            MediaItems = new HashSet<MediaItem>();
+            this.ProductsIngridients = new HashSet<ProductsIngridients>();
+            this.MediaItems = new HashSet<MediaItem>();
         }
 
         private ICollection<ProductsIngridients> productsingridients;
@@ -19,8 +20,9 @@ namespace PizzaLab.Data.PizzaLab.Data.Models
         public virtual ICollection<ProductsIngridients> ProductsIngridients
         {
             get { return productsingridients; }
-            private set { productsingridients = value; }
+            set { productsingridients = value; }
         }
+
         private ICollection<MediaItem> mediaItems;
 
         public virtual ICollection <MediaItem> MediaItems
@@ -28,6 +30,7 @@ namespace PizzaLab.Data.PizzaLab.Data.Models
             get { return  mediaItems; }
             set {  mediaItems = value; }
         }
+
         public virtual ProductType ProductType { get; set; }
 
         public string Description { get; set; }
@@ -35,9 +38,9 @@ namespace PizzaLab.Data.PizzaLab.Data.Models
         public string ImageUrl { get; set; }
 
         public int Id { get; set; }
+
         public string Name { get; set; }
+
         public decimal Price { get; set; }
-
-
     }
 }

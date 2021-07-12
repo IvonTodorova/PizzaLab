@@ -16,12 +16,15 @@ namespace PizzaLab.Data.PizzaLab.Data.Models
 
         [Key]
         public int Id { get; set; }
-        public virtual Product Product { get; set; }
-        
-        public virtual Order Order { get; set; }
-        public int Quantity { get; set; }
-        public virtual PizzaSize PizzaSize { get; set; }
-        public decimal TotalValue { get; set; }
 
+        public virtual Product Product { get; set; }
+
+        public virtual Order Order { get; set; }
+
+        public int Quantity { get; set; }
+
+        public virtual PizzaSize PizzaSize { get; set; }
+
+        public decimal TotalPrice { get; set; }
     }
 }

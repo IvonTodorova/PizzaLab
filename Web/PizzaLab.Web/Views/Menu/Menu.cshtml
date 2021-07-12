@@ -1,10 +1,9 @@
-﻿@{
+﻿@model PizzaLab.Web.ViewModels.Products.ProductsCollectionViewModel
+@{
     ViewData["Title"] = "Menu";
 }
 
 <section class="home-slider owl-carousel img" style="background-image: url('@Url.Content("~/images/bg_1.jpg")');">
- 
-
     <div class="slider-item" style="background-image: url('@Url.Content("~/images/bg_3.jpg")');">
         <div class="overlay"></div>
         <div class="container">
@@ -31,67 +30,31 @@
     </div>
     <div class="container-wrap">
         <div class="row no-gutters d-flex">
-            <div class="col-lg-4 d-flex ftco-animate">
-                <div class="services-wrap d-flex">
-                    <a href="#" class="img" style="background-image: url('@Url.Content("~/images/pizza-1.jpg")');"></a>
-                    <div class="text p-4">
-                        <h3>Italian Pizza</h3>
-                        <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia </p>
-                        <p class="price"><span>$2.90</span> <a href="#" class="ml-2 btn btn-white btn-outline-white">Order</a></p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4 d-flex ftco-animate">
-                <div class="services-wrap d-flex">
-                    <a href="#" class="img" style="background-image: url('@Url.Content("~/images/pizza-2.jpg")');"></a>
-                    <div class="text p-4">
-                        <h3>Greek Pizza</h3>
-                        <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia</p>
-                        <p class="price"><span>$2.90</span> <a href="#" class="ml-2 btn btn-white btn-outline-white">Order</a></p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4 d-flex ftco-animate">
-                <div class="services-wrap d-flex">
-                    <a href="#" class="img" style="background-image:url('@Url.Content("~/images/pizza-3.jpg")');"></a>
-                    <div class="text p-4">
-                        <h3>Caucasian Pizza</h3>
-                        <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia</p>
-                        <p class="price"><span>$2.90</span> <a href="#" class="ml-2 btn btn-white btn-outline-white">Order</a></p>
-                    </div>
-                </div>
-            </div>
+            @foreach (var product in Model.Products)
+            {
+                var imgUrl = "~/images/bg_1.png";
+                var mediaItem = product.MediaItems.FirstOrDefault();
 
-            <div class="col-lg-4 d-flex ftco-animate">
-                <div class="services-wrap d-flex">
-                    <a href="#" class="img order-lg-last" style="background-image: url('@Url.Content("~/images/pizza-4.jpg")');"></a>
-                    <div class="text p-4">
-                        <h3>American Pizza</h3>
-                        <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia </p>
-                        <p class="price"><span>$2.90</span> <a href="#" class="ml-2 btn btn-white btn-outline-white">Order</a></p>
+                if (mediaItem != null)
+                {
+                    imgUrl = mediaItem.Path + "/" + mediaItem.Name + "." + mediaItem.MediaType;
+                }
+
+                <div class="col-lg-4 d-flex ftco-animate">
+                    <div class="services-wrap d-flex">
+                        <a href="#" class="img" style="background-image: url('@Url.Content(imgUrl)');"></a>
+                        <div class="text p-4">
+                            <h3>@product.Name</h3>
+                            <p>@product.Description</p>
+                            <p class="price">
+                                <span>@product.Price.ToString("C")</span>
+                                <a asp-area="" asp-controller="Product" asp-action="@product.Id"
+                                   class="ml-2 btn btn-white btn-outline-white">Order</a>
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-4 d-flex ftco-animate">
-                <div class="services-wrap d-flex">
-                    <a href="#" class="img order-lg-last" style="background-image: url('@Url.Content("~/images/pizza-5.jpg")');"></a>
-                    <div class="text p-4">
-                        <h3>Tomatoe Pie</h3>
-                        <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia</p>
-                        <p class="price"><span>$2.90</span> <a href="#" class="ml-2 btn btn-white btn-outline-white">Order</a></p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4 d-flex ftco-animate">
-                <div class="services-wrap d-flex">
-                    <a href="#" class="img order-lg-last" style="background-image:url('@Url.Content("~/images/pizza-6.jpg")');"></a>
-                    <div class="text p-4">
-                        <h3>Margherita</h3>
-                        <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia</p>
-                        <p class="price"><span>$2.90</span> <a href="#" class="ml-2 btn btn-white btn-outline-white">Order</a></p>
-                    </div>
-                </div>
-            </div>
+            }
         </div>
     </div>
 

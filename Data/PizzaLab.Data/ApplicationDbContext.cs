@@ -23,15 +23,14 @@
             : base(options)
         {
         }
-        
-
+        public DbSet<ProductsIngridients> ProductsIngridients { get; set; }
         public DbSet<Setting> Settings { get; set; }
-        public new DbSet<User> Users { get; set; }
+        public DbSet<UserAddress> UserAddress { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Purchase> Purchases { get; set; }
         public DbSet<Ingrеdient> Ingridients { get; set; }
         public DbSet<Product> Products { get; set; }
-        public DbSet<Order> MediaItem { get; set; }
+        public DbSet<MediaItem> MediaItem { get; set; }
 
         public override int SaveChanges() => this.SaveChanges(true);
 
@@ -55,6 +54,12 @@
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<ProductsIngridients>().HasKey(pc => new { pc.ProductId, pc.IngridientId });
+
+            //builder.Entity<ApplicationUser>()
+            //.HasOne(a => a.UserAddress)
+            //.WithOne(a => a.ApplicationUser)
+            //.HasForeignKey<UserAddress>(c => c.ApplicationUserId);
+
             base.OnModelCreating(builder);
 
             // Needed for Identity models configuration

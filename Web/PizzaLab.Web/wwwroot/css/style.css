@@ -8981,3 +8981,7 @@ textarea.form-control {
 #RenderedBody > div > .col-md-6 > section{
     display: none;
 }
+.product-image{
+    max-width:500px;
+    max-height:300px;
+}

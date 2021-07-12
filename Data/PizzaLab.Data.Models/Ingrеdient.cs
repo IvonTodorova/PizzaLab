@@ -1,4 +1,6 @@
-﻿using PizzaLab.Data.PizzaLab.Data.Models.Enums;
+﻿
+using PizzaLab.Data.Models.Enums;
+using PizzaLab.Data.PizzaLab.Data.Models.Enums;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -20,7 +22,10 @@ namespace PizzaLab.Data.PizzaLab.Data.Models
 
         public string Name { get; set; }
 
-        public decimal PricePer100Grams { get; set; }
+        public decimal PricePerUnit { get; set; }
 
+        public MeasureType MeasureType { get; set; }
+
+        public int UnitsInStock { get; set; }
     }
 }

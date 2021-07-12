@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PizzaLab.Data.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -11,7 +12,6 @@ namespace PizzaLab.Data.PizzaLab.Data.Models
             this.purchase = new HashSet<Purchase>();
         }
 
-
         private ICollection<Purchase> purchase;
 
         public virtual ICollection<Purchase> Purchases
@@ -23,9 +23,9 @@ namespace PizzaLab.Data.PizzaLab.Data.Models
         [Key]
         public int Id { get; set; }
 
-        public virtual User User { get; set; }
+        public virtual ApplicationUser User { get; set; }
 
-        public decimal? OrderTotalValue { get; set; }
+        public decimal TotalPrice { get; set; }
 
         public string Note { get; set; }
 

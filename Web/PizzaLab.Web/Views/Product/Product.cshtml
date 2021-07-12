@@ -1,0 +1,108 @@
+﻿@model PizzaLab.Web.ViewModels.Products.ProductViewModel
+
+@{
+    ViewData["Title"] = "Product";
+
+    var imgUrl = "~/images/bg_1.png";
+    var mediaItem = Model.MediaItems.First();
+
+    if (mediaItem != null)
+    {
+        imgUrl = mediaItem.Path + "/" + mediaItem.Name + "." + mediaItem.MediaType;
+    }
+
+    var sizesOrdered = Model.Sizes.Keys;
+    var sizesDict = Json.Serialize(Model.Sizes);
+    //var sizePizza = Model.SelectedSizeProduct;
+}
+
+<div class="text-center">
+    <img src="@Url.Content(imgUrl)" alt="Image" class="product-image" />
+    <h4>@Model.Name</h4>
+    <p>@Model.Description</p>
+    <hr />
+    <div class="form-group">
+        <form id="productOrderForm" method="post" asp-controller="Cart" asp-action="AddItem">
+            <input asp-for="Id" hidden />
+            <div id="sizeButtons">
+                @foreach (var size in sizesOrdered)
+                {
+                    <div class="form-check form-check-inline">
+                        <input id="product-size-@size"
+                               class="form-check-input"
+                               type="radio"
+                               asp-for="SizeName"
+                               value="@size">
+                        <label class="form-check-label" asp-for="@size">@size</label>
+                    </div>
+                }
+                <p>Ingredients: </p>
+                @foreach (var productsIngridient in Model.ProductsIngridients)
+                {
+                    <p style="color:orange;">@productsIngridient.Ingridient.Name</p>
+                }
+                @foreach (var optionalIngridient in Model.OptionaIngredients)
+                {
+                    <p style="color:orange;">@optionalIngridient.Name</p>
+
+                    <form name="form1" id="form1" action="/action_page.php">
+                        Add Ingredient: <select name="Ingredient" id="selected">
+                            <option value="@optionalIngridient.Name" selected="selected"></option>
+                            <span asp-validation-for="@optionalIngridient.Name" class="text-danger"></span>
+                        </select>
+                    </form>
+                }
+            </div>
+                    <span>Price: <span id="selectedSizePrice">@Model.Price.ToString("C")</span></span>
+                    <br />
+                    <span asp-validation-for="SizeName" class="text-danger"></span>
+                    <hr />
+                    <div class="form-group row">
+                        <label asp-for="Quantity" class="col-2 col-form-label"></label>
+                        <div class="col-10">
+                            <input asp-for="Quantity" min="1" class="form-control form-control-sm" />
+                        </div>
+                        <span asp-validation-for="Quantity" class="text-danger"></span>
+                    </div>
+                    <hr />
+                    <p class="h5">
+                        Total: <span id="product-price">1</span> x <span id="product-quantity"></span> = <span id="product-total"></span>
+                    </p>
+                    @if (!User.Identity.IsAuthenticated)
+                    {
+                        <p>
+                            <a class="font-weight-bold" asp-area="Identity" asp-page="/Account/Login">Login</a> to place an order
+                        </p>
+                    }
+                    else
+                    {
+                        <input type="submit" value="Add to cart" class="btn btn btn-outline-secondary" />
+                    }
+                    <hr />
+                    <div asp-validation-summary="All"></div>
+</form>
+    </div>
+</div>
+@section Scripts
+{
+    <script>
+    let productSizes = @sizesDict;
+        @*let pizzaSelectedSize =@sizePizza;*@
+
+    $(document).ready(() => {
+        //Track for size or quantity change
+        $('#productOrderForm').change(function (){
+            const selectedSize = $('input[name="SizeName"]:checked').val();
+            let price = productSizes[selectedSize];
+            let quantity = $('input[name=Quantity]').val();
+
+            const sizePriceDiv = $('#product-price').text(price)
+            const selectedSizePriceDiv = $('#selectedSizePrice').text(price);
+            const quantityPriceDiv = $('#product-quantity').text(quantity);
+            const productTotalPriceDiv = $('#product-total').text(price * quantity);
+
+
+        })
+    });
+    </script>
+}

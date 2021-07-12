@@ -20,6 +20,5 @@ namespace PizzaLab.Data.PizzaLab.Data.Models
         public int? ProductId { get; set; }
 
         public virtual Product Product { get; set; }
-
     }
 }

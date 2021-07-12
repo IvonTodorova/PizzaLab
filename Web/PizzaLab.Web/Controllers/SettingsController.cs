@@ -1,14 +1,14 @@
-﻿namespace PizzaLab.Web.Controllers
+﻿using System;
+using System.Threading.Tasks;
+
+using PizzaLab.Data.Common.Repositories;
+using PizzaLab.Data.Models;
+using PizzaLab.Services.Data;
+using Microsoft.AspNetCore.Mvc;
+using PizzaLab.Web.ViewModels.Settings;
+
+namespace PizzaLab.Web.Controllers
 {
-    using System;
-    using System.Threading.Tasks;
-
-    using PizzaLab.Data.Common.Repositories;
-    using PizzaLab.Data.Models;
-    using PizzaLab.Services.Data;
-    using Microsoft.AspNetCore.Mvc;
-    using PizzaLab.Web.ViewModels.Settings;
-
     public class SettingsController : BaseController
     {
         private readonly ISettingsService settingsService;

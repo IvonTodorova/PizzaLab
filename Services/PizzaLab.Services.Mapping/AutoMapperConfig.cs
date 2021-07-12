@@ -8,7 +8,7 @@
     using AutoMapper;
     using AutoMapper.Configuration;
 
-    public static class AutoMapperConfig 
+    public static class AutoMapperConfig
     {
         private static bool initialized;
 

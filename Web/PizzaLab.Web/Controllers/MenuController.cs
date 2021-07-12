@@ -1,6 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PizzaLab.Data.PizzaLab.Data.Models;
+using PizzaLab.Services.Data;
 using PizzaLab.Web.ViewModels;
+using PizzaLab.Web.ViewModels.Products;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,9 +15,23 @@ namespace PizzaLab.Web.Controllers
 {
     public class MenuController : BaseController
     {
-        public IActionResult Menu()
+        private readonly IProductService productService;
+
+        // private readonly IMapper mapper;
+        public MenuController(IProductService productService)
         {
-            return this.View();
+            this.productService = productService;
+           // this.mapper = mapper;
+        }
+
+        public async Task<IActionResult> MenuAsync()
+        {
+            ProductsCollectionViewModel collection = new ProductsCollectionViewModel()
+            {
+                Products = await this.productService.GetAll<ProductViewModel>(),
+            };
+
+            return this.View(collection);
         }
 
 

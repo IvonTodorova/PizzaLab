@@ -26,7 +26,6 @@ namespace PizzaLab.Services.Data
             return product;
         }
 
-        
         public async Task<bool> DeleteAsync(int productId)
         {
             var product = await this.productsRepository.All().FirstOrDefaultAsync(x => x.Id == productId);
@@ -36,9 +35,19 @@ namespace PizzaLab.Services.Data
             return result > 0;
         }
 
-        public Task<IEnumerable<T>> GetAll<T>(string sortCriteria = null, int? count = null)
+        public async Task<IEnumerable<T>> GetAll<T>(string sortCriteria = null, int? count = null)
         {
-            throw new NotImplementedException();
+            var productsQuery = this.productsRepository.All();
+
+            if (typeof(T) == typeof(Product))
+            {
+                var products = productsQuery.ToList<Product>();
+                return products as IEnumerable<T>;
+            }
+
+            var result = await productsQuery.To<T>().ToListAsync();
+
+            return result;
         }
 
         public async Task<Product> GetBaseById(int id)

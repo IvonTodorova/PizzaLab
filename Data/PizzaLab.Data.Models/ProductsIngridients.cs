@@ -15,6 +15,8 @@ namespace PizzaLab.Data.PizzaLab.Data.Models
 
         public Ingrеdient Ingridient { get; set; }
 
-        public int QuantityInGrams { get; set; }
+        public int DischargedUnits { get; set; }
+
+        public bool IsOptionalForAddingAProduct { get; set; }
     }
 }

@@ -1,7 +1,6 @@
 ﻿namespace PizzaLab.Web
 {
     using System.Reflection;
-
     using PizzaLab.Data;
     using PizzaLab.Data.Common;
     using PizzaLab.Data.Common.Repositories;
@@ -21,6 +20,9 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
+    using ServiceStack;
+    using System;
+    using PizzaLab.Services;
 
     public class Startup
     {
@@ -35,7 +37,8 @@
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(
-                options => options.UseSqlServer(this.configuration.GetConnectionString("DefaultConnection")));
+                options => options.UseSqlServer(this.configuration.GetConnectionString("DefaultConnection"))
+                .EnableSensitiveDataLogging());
 
             services.AddDefaultIdentity<ApplicationUser>(IdentityOptionsProvider.GetIdentityOptions)
                 .AddRoles<ApplicationRole>().AddEntityFrameworkStores<ApplicationDbContext>();
@@ -51,29 +54,52 @@
                 options =>
                     {
                         options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
-                    }).AddRazorRuntimeCompilation();
+                    }).AddSessionStateTempDataProvider().AddRazorRuntimeCompilation();
             services.AddRazorPages();
             services.AddDatabaseDeveloperPageExceptionFilter();
+
+            // Session configuration
+            services.AddSession(options =>
+            {
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+                options.IdleTimeout = new TimeSpan(0, 24, 0, 0);
+            });
+
+            // TempData configuration
+            services.Configure<CookieTempDataProviderOptions>(options =>
+            {
+                options.Cookie.IsEssential = true;
+            });
+
+            // Antiforgery token configuration
+            services.AddAntiforgery(options =>
+            {
+                options.HeaderName = this.configuration.GetValue<string>("AntiforgeryHeader");
+            });
+
+
+            // Auto Mapper Configurations
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddSingleton(this.configuration);
 
             // Data repositories
             services.AddScoped(typeof(IDeletableEntityRepository<>), typeof(EfDeletableEntityRepository<>));
             services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
-           // services.AddScoped<IDbQueryRunner, DbQueryRunner>();
+            services.AddScoped<IDbQueryRunner, DbQueryRunner>();
 
             // Application services
             services.AddTransient<IEmailSender, NullMessageSender>();
             services.AddTransient<ISettingsService, SettingsService>();
-
-
-            //services.AddScoped<IIngridientService, IngridientService>();
-            //services.AddScoped<IOrderService, OrderService>();
-            //services.AddScoped<IProductService, ProductService>();
-            //services.AddScoped<IMediaItemService, MediaItemService>();
-            //services.AddScoped<IUserService, UserService>();
-            //services.AddScoped<IPurchaseService, PurchaseService>();
-
+            services.AddTransient<ISessionService, SessionService>();
+            services.AddScoped<IIngredientService, IngredientService>();
+            services.AddScoped<IProductIngredientService, ProductIngredientService>();
+            services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IMediaItemService, MediaItemService>();
+            services.AddScoped<IUserAddressService, UserAddressService>();
+            services.AddScoped<IPurchaseService, PurchaseService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -109,6 +135,7 @@
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseSession();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
@@ -120,6 +147,16 @@
                     name: "menu",
                     pattern: "menu",
                     defaults: new { controller = "Menu", action = "Menu" });
+
+                endpoints.MapControllerRoute(
+                   name: "cart",
+                   pattern: "cart",
+                   defaults: new { controller = "Cart", action = "Cart" });
+
+                endpoints.MapControllerRoute(
+                  name: "order",
+                  pattern: "order",
+                  defaults: new { controller = "Order", action = "Order" });
 
                 endpoints.MapControllerRoute(
                     name: "default",

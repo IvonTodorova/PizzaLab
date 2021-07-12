@@ -1,0 +1,57 @@
+﻿@using PizzaLab.Data.Models.Enums
+@model PizzaLab.Web.ViewModels.Orders.OrderViewModel
+
+@{
+    this.ViewData["Title"] = "Order Details";
+}
+
+<div class="text-center">
+    <small class="text-muted">Order number: @Model.Id</small>
+    <hr />
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th scope="col">Product</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Price</th>
+                <th scope="col">Total price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var purchase in Model.Purchases)
+            {
+                purchase.Price = purchase.TotalPrice / purchase.Quantity;
+                <tr>
+                    <td>@purchase.Product.Name</td>
+                    <td>@purchase.Quantity</td>
+                    <td>@purchase.Price</td>
+                    <td>@purchase.TotalPrice</td>
+                </tr>
+            }
+            <tr>
+                <th scope="row" colspan="3" class="text-right">Total: </th>
+                <th scope="row">@Model.TotalPrice</th>
+            </tr>
+        </tbody>
+    </table>
+    <div class="text-center">
+        <p>
+            <a role="button" class="btn btn-outline-secondary"
+               href="/Identity/Account/Manage/Orders">
+                View orders
+            </a>
+        </p>
+        <p>
+            <a role="button" class="btn btn-outline-secondary"
+               asp-controller="Home" asp-action="Index">
+                Go to the Home page
+            </a>
+        </p>
+        <hr />
+        @*@if (Model.OrderStatus.Status == OrderStatusEnum.Processing.ToString())
+        {*@
+            <a role="button" class="btn btn-danger"
+               asp-controller="Orders" asp-action="CancelOrder" asp-route-orderId="@Model.Id">Cancel order</a>
+        @*}*@
+    </div>
+</div>

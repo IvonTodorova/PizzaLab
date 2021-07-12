@@ -1,0 +1,149 @@
+﻿@model PizzaLab.Web.ViewModels.Cart.CartViewModel
+
+@{
+    this.ViewData["Title"] = "Cart";
+}
+
+<div class="container">
+    <div class="row cart-header-row">
+        <div class="col-2 d-none d-md-block">
+            <span class=""></span>
+        </div>
+        <div class="col-5">
+            <span class="text-uppercase">Product</span>
+        </div>
+        <div class="col-2 text-center d-none d-md-block">
+            <span class="text-uppercase">Quantity</span>
+        </div>
+        <div class="col-2 text-center d-none d-md-block">
+            <span class="text-uppercase">Price</span>
+        </div>
+        <div class="col-1 d-none d-md-block">
+            <span class="text-uppercase"></span>
+        </div>
+    </div>
+    <hr/>
+    @if (Model.Products.Count <= 0)
+    {
+        <div class="row">
+            <div class="col-12">
+                <h6>You cart is empty</h6>
+            </div>
+        </div>
+    }
+    else
+    {
+        @foreach (var cartProductViewModel in Model.Products)
+        {
+            var imgUrl = "~/images/bg_1.png";
+            var mediaItem = cartProductViewModel.MediaItems.FirstOrDefault();
+
+            if (mediaItem != null)
+            {
+                imgUrl = mediaItem.Path + "/" + mediaItem.Name + "." + mediaItem.MediaType;
+            }
+
+            Model.TotalPrice = Model.TotalPrice + (cartProductViewModel.TotalPrice * cartProductViewModel.Quantity);
+
+            <div class="row">
+                <div class="col-3 col-md-2">
+                    <img src="@Url.Content(imgUrl)" alt="Image" class="img-fluid"/>
+                </div>
+                <div class="col-9 col-md-5">
+                    <span class="font-weight-bold">@cartProductViewModel.Name</span><br/>
+                    <span class="cart-product-description font-weight-light">@cartProductViewModel.SizeName</span>
+                    <div>
+                        <span class="cart-ingredient">+ Ingredient</span>
+                    </div>
+                </div>
+                <div class="col-4 col-md-2 text-center">
+                    <a role="button" class="btn btn-outline-secondary btn-sm"
+                       asp-action="DecreaseItemQuantity"
+                       asp-route-itemId="@cartProductViewModel.Id">
+                        -
+                    </a>
+                    <span>@cartProductViewModel.Quantity</span>
+                    <a role="button" class="btn btn-outline-secondary btn-sm"
+                       asp-action="IncreaseItemQuantity"
+                       asp-route-itemId="@cartProductViewModel.Id">
+                        +
+                    </a>
+                </div>
+                <div class="col-4 col-md-2 text-center">
+                    <span>@cartProductViewModel.TotalPrice</span>
+                </div>
+                <div class="col-4 col-md-1  text-center">
+                    <a role="button" class="btn btn-danger btn-sm"
+                       asp-action="RemoveItem"
+                       asp-route-itemId="@cartProductViewModel.Id">
+                        X
+                    </a>
+                </div>
+            </div>
+            <br/>
+        }
+    }
+    <hr/>
+
+    <div class="row h5">
+        <div class="col-9 col-md-10">
+            <span class="float-right font-weight-bold">Total: </span>
+        </div>
+        <div class="col-3 col-md-2">
+            <span id="totalPrice" class="">@Model.TotalPrice</span><span> $</span>
+        </div>
+    </div>
+
+    <hr/>
+    @if (Model.Products.Count > 0)
+    {
+        <div class="row">
+            <div class="col-12">
+                <form method="post" asp-controller="Orders" asp-action="PlaceOrder">
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label asp-for="@Model.Address.FistName"></label>
+                            <input type="text" class="form-control" asp-for="@Model.Address.FistName">
+                            <span asp-validation-for="@Model.Address.FistName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label asp-for="@Model.Address.PhoneNumber"></label>
+                            <input type="text" class="form-control" asp-for="@Model.Address.PhoneNumber">
+                            <span asp-validation-for="@Model.Address.PhoneNumber" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label asp-for="@Model.Address.Town"></label>
+                            <input type="text" class="form-control" asp-for="@Model.Address.Town">
+                            <span asp-validation-for="@Model.Address.Town" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label asp-for="@Model.Address.Country"></label>
+                            <input type="text" class="form-control" asp-for="@Model.Address.Country">
+                            <span asp-validation-for="@Model.Address.Country" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label asp-for="@Model.Address.ShippingAddress"></label>
+                            <input type="text" class="form-control" asp-for="@Model.Address.ShippingAddress">
+                            <span asp-validation-for="@Model.Address.ShippingAddress" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="@Model.AdditionalNotes"></label>
+                        <input asp-for="@Model.AdditionalNotes" type="text" class="form-control" placeholder="Example: Door is locked or Beware of dog.">
+                    </div>
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input asp-for="@Model.UseAddress" class="form-check-input" type="checkbox">
+                            <label asp-for="@Model.UseAddress" class="form-check-label"></label>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary w-50">Order now</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    }
+</div>

@@ -3,7 +3,9 @@ namespace PizzaLab.Data.Models
 {
     using System;
     using System.Collections.Generic;
+
     using global::PizzaLab.Data.Common.Models;
+    using global::PizzaLab.Data.PizzaLab.Data.Models;
     using Microsoft.AspNetCore.Identity;
 
     public class ApplicationUser : IdentityUser, IAuditInfo, IDeletableEntity
@@ -14,6 +16,7 @@ namespace PizzaLab.Data.Models
             this.Roles = new HashSet<IdentityUserRole<string>>();
             this.Claims = new HashSet<IdentityUserClaim<string>>();
             this.Logins = new HashSet<IdentityUserLogin<string>>();
+            this.Orders = new HashSet<Order>();
         }
 
         // Audit info
@@ -26,10 +29,14 @@ namespace PizzaLab.Data.Models
 
         public DateTime? DeletedOn { get; set; }
 
+        public virtual ICollection<Order> Orders { get; set; }
+
         public virtual ICollection<IdentityUserRole<string>> Roles { get; set; }
 
         public virtual ICollection<IdentityUserClaim<string>> Claims { get; set; }
 
         public virtual ICollection<IdentityUserLogin<string>> Logins { get; set; }
+        public int? UserAddressId { get; set; }
+        public virtual UserAddress UserAddress { get; set; }
     }
 }

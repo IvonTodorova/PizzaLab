@@ -14,18 +14,50 @@ namespace PizzaLab.Services.Data
 {
     public class OrderService : IOrderService
     {
-
         private readonly IRepository<Order> orderRepository;
-       
-        public OrderService(IRepository<Order> orderRepository)
+        private readonly IIngredientService ingrеdienttRepo;
+        private readonly IPurchaseService purchaseRepository;
+        private readonly IProductIngredientService productIngredientService;
+
+        public OrderService(IRepository<Order> orderRepository, IPurchaseService purchaseRepository, IIngredientService ingrеdienttRepo, IProductIngredientService productIngredientService)
         {
             this.orderRepository = orderRepository;
+            this.purchaseRepository = purchaseRepository;
+            this.ingrеdienttRepo = ingrеdienttRepo;
+            this.productIngredientService = productIngredientService;
         }
 
         public async Task<Order> CreateAsync(Order order)
         {
+            List<Purchase> purchasesForAdd = order.Purchases.ToList();
+
+            order.Purchases = new List<Purchase>();
+
             await this.orderRepository.AddAsync(order);
-            await this.orderRepository.SaveChangesAsync();
+            this.orderRepository.SaveChanges();
+
+            foreach (var purchase in purchasesForAdd)
+            {
+                //TODO get product ingredients by product id
+                var productIngredients = this.productIngredientService.GetAllProductIngredientsByProductId(purchase.Product.Id);
+
+                //ingridientite koito sa v produkta shte namalqme
+                foreach (var productIngridient in productIngredients)
+                {
+                    //namalqme ingridienta v pizzata
+                    var unitsForDischage = productIngridient.DischargedUnits * purchase.Quantity;
+
+                    //TODO DISCHARGE UNIQUE Collection INGREDIENTS FOR EVERY PRODUCT
+
+                    this.ingrеdienttRepo.DischargeUnits(unitsForDischage, productIngridient.IngridientId);
+
+                }
+
+                purchase.Order = order;
+
+                //TODO save to db PURCHASES (CREATE A RECORD)
+                var savePurchase = this.purchaseRepository.CreateAsync(purchase);
+            }
 
             return order;
         }
@@ -47,7 +79,7 @@ namespace PizzaLab.Services.Data
 
             return count;
         }
-       
+
         public async Task UpdateAsync(Order order) 
         {
             this.orderRepository.Update(order);
@@ -59,16 +91,17 @@ namespace PizzaLab.Services.Data
             this.orderRepository.Update(order);
             this.orderRepository.SaveChangesAsync();
         }
+
         public void DeleteOrder(OrderDto orderDto)
         {
-            var order = orderRepository.All().FirstOrDefault(x => x.Id == orderDto.Id);
+            var order = this.orderRepository.All().FirstOrDefault(x => x.Id == orderDto.Id);
             if (order == null)
             {
                 throw new ArgumentNullException(nameof(orderDto));
             }
 
-            orderRepository.Delete(order);
-            orderRepository.SaveChangesAsync();
+            this.orderRepository.Delete(order);
+            this.orderRepository.SaveChangesAsync();
         }
 
         public async Task<Order> GetBaseById(int id)

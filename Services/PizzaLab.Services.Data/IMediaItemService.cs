@@ -7,5 +7,6 @@ namespace PizzaLab.Services.Data
 {
     public class IMediaItemService
     {
+
     }
 }

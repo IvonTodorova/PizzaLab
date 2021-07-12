@@ -15,6 +15,7 @@ namespace PizzaLab.Data.Seeding
             {
                 return;
             }
+
             var ingredients = IngredientsData.GetIngredients();
             await dbContext.Ingridients.AddRangeAsync(ingredients);
         }
