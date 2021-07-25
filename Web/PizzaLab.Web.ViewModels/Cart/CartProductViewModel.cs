@@ -11,12 +11,19 @@
     {
         private ICollection<MediaItem> mediaItems;
         public ICollection<ProductsIngridients> productsingridients;
+        private ICollection<Ingrеdient> addedIngredients;
 
         public CartProductViewModel()
         {
             this.MediaItems = new HashSet<MediaItem>();
             this.productsingridients = new HashSet<ProductsIngridients>();
+            this.AddedIngredients = new HashSet<Ingrеdient>();
 
+        }
+        public virtual ICollection<Ingrеdient> AddedIngredients
+        {
+            get { return this.addedIngredients; }
+            set { this.addedIngredients = value; }
         }
         public virtual ICollection<ProductsIngridients> ProductsIngridients
         {

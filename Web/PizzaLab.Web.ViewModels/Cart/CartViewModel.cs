@@ -1,14 +1,14 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-
-namespace PizzaLab.Web.ViewModels.Cart
+﻿namespace PizzaLab.Web.ViewModels.Cart
 {
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.ComponentModel.DataAnnotations;
+    using System.Linq;
+
     using PizzaDotNet.Web.ViewModels.Cart;
     using PizzaLab.Data.PizzaLab.Data.Models;
     using PizzaLab.Services.Mapping;
     using PizzaLab.Web.ViewModels.Products;
-    using System.Collections.Generic;
-    using System.Linq;
 
     public class CartViewModel
     {

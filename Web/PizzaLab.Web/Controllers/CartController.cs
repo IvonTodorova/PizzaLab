@@ -64,7 +64,7 @@ namespace PizzaLab.Web.Controllers
                 var productViewModel = await this.productsService.GetById<CartProductViewModel>(productDto.Id);
                 foreach (var productIngridient in productViewModel.ProductsIngridients)
                 {
-
+                    //var price = productViewModel.AddedIngredients.Sum<IngredientService>;
                     /* Get product size */
                     Enum.TryParse(productDto.SizeName, out PizzaSize selectedPizzaSize);
                     switch (selectedPizzaSize)

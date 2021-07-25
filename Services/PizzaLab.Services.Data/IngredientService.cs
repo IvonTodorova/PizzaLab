@@ -38,9 +38,11 @@ namespace PizzaLab.Services.Data
             this.ingredientRepository.SaveChanges();
         }
 
-
-       
-
+        public void Update(Ingrеdient ingredient)
+        {
+            this.ingredientRepository.Update(ingredient);
+            this.ingredientRepository.SaveChangesAsync();
+        }
 
     }
 }

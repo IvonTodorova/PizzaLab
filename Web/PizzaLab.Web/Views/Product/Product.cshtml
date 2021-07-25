@@ -21,42 +21,36 @@
     <h4>@Model.Name</h4>
     <p>@Model.Description</p>
     <hr />
-    <div class="form-group">
-        <form id="productOrderForm" method="post" asp-controller="Cart" asp-action="AddItem">
-            <input asp-for="Id" hidden />
-            <div id="sizeButtons">
-                @foreach (var size in sizesOrdered)
-                {
-                    <div class="form-check form-check-inline">
-                        <input id="product-size-@size"
-                               class="form-check-input"
-                               type="radio"
-                               asp-for="SizeName"
-                               value="@size">
-                        <label class="form-check-label" asp-for="@size">@size</label>
+    <div class="row">
+            <div class="col-sm">
+                <form id="productOrderForm" method="post" asp-controller="Cart" asp-action="AddItem">
+                    <input asp-for="Id" hidden />
+                    <div id="sizeButtons">
+                        @foreach (var size in sizesOrdered)
+                        {
+                            <div class="form-check form-check-inline">
+                                <input id="product-size-@size"
+                                       class="form-check-input"
+                                       type="radio"
+                                       asp-for="SizeName"
+                                       value="@size">
+                                <label class="form-check-label" asp-for="@size">@size</label>
+                            </div>
+                        }
+                        <p>Ingredients: </p>
+                        @foreach (var productsIngridient in Model.ProductsIngridients)
+                        {
+                            <p style="color:orange;">@productsIngridient.Ingridient.Name</p>
+                        }
                     </div>
-                }
-                <p>Ingredients: </p>
-                @foreach (var productsIngridient in Model.ProductsIngridients)
-                {
-                    <p style="color:orange;">@productsIngridient.Ingridient.Name</p>
-                }
-                @foreach (var optionalIngridient in Model.OptionaIngredients)
-                {
-                    <p style="color:orange;">@optionalIngridient.Name</p>
 
-                    <form name="form1" id="form1" action="/action_page.php">
-                        Add Ingredient: <select name="Ingredient" id="selected">
-                            <option value="@optionalIngridient.Name" selected="selected"></option>
-                            <span asp-validation-for="@optionalIngridient.Name" class="text-danger"></span>
-                        </select>
-                    </form>
-                }
-            </div>
-                    <span>Price: <span id="selectedSizePrice">@Model.Price.ToString("C")</span></span>
-                    <br />
-                    <span asp-validation-for="SizeName" class="text-danger"></span>
+                    <span>
+                        Price: <span id="selectedSizePrice"> @Model.Price.ToString("C") </span>
+                        <br />
+                        <span asp - validation -for="SizeName" class="text-danger"></span>
+                    </span>
                     <hr />
+
                     <div class="form-group row">
                         <label asp-for="Quantity" class="col-2 col-form-label"></label>
                         <div class="col-10">
@@ -66,7 +60,8 @@
                     </div>
                     <hr />
                     <p class="h5">
-                        Total: <span id="product-price">1</span> x <span id="product-quantity"></span> = <span id="product-total"></span>
+                        Total: <span id="product-price"> 1 </span> x <span id="product-quantity"></span> = <span id="product-total">
+                        </span>
                     </p>
                     @if (!User.Identity.IsAuthenticated)
                     {
@@ -80,29 +75,50 @@
                     }
                     <hr />
                     <div asp-validation-summary="All"></div>
-</form>
+                </form>
+            </div>
+            <div class="col-sm">
+                <form id="selectedIngredient" method="post" asp-controller="Product" asp-action="AddOptionalIngredient">
+                    <input asp-for="Id" hidden />
+                    <input asp-for="AddedPizzaIngredients" hidden />
+
+                    <div class="row">
+                        <input type="submit" value=" +" class="btn btn-outline-secondary btn-sm" />
+
+                        @Html.DropDownListFor(m => m.SelectedIngrеdientId, Model.OptionaIngredients.Select(m => new SelectListItem { Text = m.Name, Value = m.Id.ToString() }), "Select a ingredient...", new { @style = "width:200px; margin-left:2%" })
+                    </div>
+                </form>
+
+                <p>Optional Ingredients: </p>
+                @foreach (var addedPizzaIngredient in Model.AddedPizzaIngredients)
+                {
+                    <p style="color:orange;">@addedPizzaIngredient.Name</p>
+                }
+            </div>
     </div>
-</div>
-@section Scripts
-{
-    <script>
-    let productSizes = @sizesDict;
+
+    @section Scripts{
+          <script >
+        let productSizes = @sizesDict;
         @*let pizzaSelectedSize =@sizePizza;*@
+            $(document).ready(() =>
+            {
+                //Track for size or quantity change
+                $('#productOrderForm').change(function(){
+                    const selectedSize = $('input[name="SizeName"]:checked').val();
+                    let price = productSizes[selectedSize];
+                    let quantity = $('input[name=Quantity]').val();
 
-    $(document).ready(() => {
-        //Track for size or quantity change
-        $('#productOrderForm').change(function (){
-            const selectedSize = $('input[name="SizeName"]:checked').val();
-            let price = productSizes[selectedSize];
-            let quantity = $('input[name=Quantity]').val();
+                    const sizePriceDiv = $('#product-price').text(price)
+                    const selectedSizePriceDiv = $('#selectedSizePrice').text(price);
+                    const quantityPriceDiv = $('#product-quantity').text(quantity);
+                    const productTotalPriceDiv = $('#product-total').text(price * quantity);
 
-            const sizePriceDiv = $('#product-price').text(price)
-            const selectedSizePriceDiv = $('#selectedSizePrice').text(price);
-            const quantityPriceDiv = $('#product-quantity').text(quantity);
-            const productTotalPriceDiv = $('#product-total').text(price * quantity);
+                })
+            });
 
-
-        })
-    });
-    </script>
-}
+              //function ddListChange() {
+              //    document.getElementById("demo").innerHTML = "Hello World";
+              //}
+        </script>
+    }

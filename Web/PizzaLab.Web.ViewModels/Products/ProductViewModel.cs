@@ -15,16 +15,22 @@ namespace PizzaLab.Web.ViewModels.Products
         private Dictionary<PizzaSize, decimal> sizes;
         private ICollection<ProductsIngridients> productsingridients;
         private ICollection<Ingrеdient> optionalIngredients;
+        private ICollection<Ingrеdient> addedPizzaIngredients;
 
         public ProductViewModel()
         {
             this.MediaItems = new HashSet<MediaItem>();
             this.sizes = new Dictionary<PizzaSize, decimal>();
             this.ProductsIngridients = new HashSet<ProductsIngridients>();
-
             this.OptionaIngredients = new HashSet<Ingrеdient>();
+            this.addedPizzaIngredients = new HashSet<Ingrеdient>();
         }
 
+        public virtual ICollection<Ingrеdient> AddedPizzaIngredients
+        {
+            get { return this.addedPizzaIngredients; }
+            set { this.addedPizzaIngredients = value; }
+        }
         public virtual ICollection<Ingrеdient> OptionaIngredients
         {
             get { return this.optionalIngredients; }
@@ -59,6 +65,8 @@ namespace PizzaLab.Web.ViewModels.Products
         [Range(1, 20)]
         [Required(ErrorMessage = "Please enter a a valid quantity")]
         public int Quantity { get; set; }
+
+        public string SelectedIngrеdientId { get; set; }
 
         public Dictionary<PizzaSize, decimal> Sizes { get { return this.sizes; } }
 

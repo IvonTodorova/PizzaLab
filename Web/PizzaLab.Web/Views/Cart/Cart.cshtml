@@ -53,7 +53,15 @@
                     <span class="font-weight-bold">@cartProductViewModel.Name</span><br/>
                     <span class="cart-product-description font-weight-light">@cartProductViewModel.SizeName</span>
                     <div>
-                        <span class="cart-ingredient">+ Ingredient</span>
+                        @foreach (var product in Model.Products)
+                        {
+                            @*var ingredients= product.AddedIngredients.All
+
+                            <p style="color:orange;">@ingredient.AddedIngredients</p>*@
+                            
+                            @*<p style="color:orange;">@ingredient.AddedIngredients</p>*@
+                        }
+
                     </div>
                 </div>
                 <div class="col-4 col-md-2 text-center">
