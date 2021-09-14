@@ -16,7 +16,10 @@ namespace PizzaLab.Web.ViewModels.Orders
         public string UserId { get; set; }
 
         public ICollection<PurchaseViewModel> Purchases { get; set; }
+
         public decimal? TotalPrice { get; set; }
+
+        public bool IsDeletedOrder { get; set; }
 
     }
 }

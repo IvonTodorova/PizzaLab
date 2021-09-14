@@ -28,7 +28,7 @@ namespace PizzaLab.Web.Controllers
         {
             ProductsCollectionViewModel collection = new ProductsCollectionViewModel()
             {
-                Products = await this.productService.GetAll<ProductViewModel>(),
+                Products = (IList<ProductViewModel>)await this.productService.GetAll<ProductViewModel>(),
             };
 
             return this.View(collection);

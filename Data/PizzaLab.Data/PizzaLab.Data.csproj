@@ -24,6 +24,7 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="10.1.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
+    <PackageReference Include="DataAccess" Version="1.0.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.7" />
@@ -43,6 +44,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\PizzaLab.Common\PizzaLab.Common.csproj" />
+    <ProjectReference Include="..\..\Services\PizzaLab.Services\PizzaLab.Services.csproj" />
     <ProjectReference Include="..\PizzaLab.Data.Common\PizzaLab.Data.Common.csproj" />
     <ProjectReference Include="..\PizzaLab.Data.Models\PizzaLab.Data.Models.csproj" />
   </ItemGroup>

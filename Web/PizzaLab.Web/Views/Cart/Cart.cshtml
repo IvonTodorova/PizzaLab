@@ -22,7 +22,7 @@
             <span class="text-uppercase"></span>
         </div>
     </div>
-    <hr/>
+    <hr />
     @if (Model.Products.Count <= 0)
     {
         <div class="row">
@@ -47,21 +47,43 @@
 
             <div class="row">
                 <div class="col-3 col-md-2">
-                    <img src="@Url.Content(imgUrl)" alt="Image" class="img-fluid"/>
+                    <img src="@Url.Content(imgUrl)" alt="Image" class="img-fluid" />
                 </div>
                 <div class="col-9 col-md-5">
-                    <span class="font-weight-bold">@cartProductViewModel.Name</span><br/>
+                    <span class="font-weight-bold">@cartProductViewModel.Name</span><br />
                     <span class="cart-product-description font-weight-light">@cartProductViewModel.SizeName</span>
+                    <p></p>
                     <div>
-                        @foreach (var product in Model.Products)
-                        {
-                            @*var ingredients= product.AddedIngredients.All
-
-                            <p style="color:orange;">@ingredient.AddedIngredients</p>*@
-                            
-                            @*<p style="color:orange;">@ingredient.AddedIngredients</p>*@
-                        }
-
+                        <span>Added Ingredients</span>
+                        <table id="options">
+                            @foreach (var item in Model.Products)
+                            {
+                                @for (int i = 0; i < item.AddedOptionalIngredients.Count; i++)
+                                {
+                                    if (item.AddedOptionalIngredients[i].DischargedUnits > 0)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.AddedOptionalIngredients[i].Ingridient.Name) 
+                                            </td>
+                                            <td>
+                                                <span>
+                                                    @Html.DisplayFor(modelItem => item.AddedOptionalIngredients[i].DischargedUnits)
+                                                </span>                         
+                                                <span>x</span>
+                                            </td>
+                              
+                                            <td>
+                                                <span>
+                                                    @Html.DisplayFor(modelItem => item.AddedOptionalIngredients[i].Ingridient.PricePerUnit)
+                                                </span>
+                                                <span>$</span>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            }
+                        </table>
                     </div>
                 </div>
                 <div class="col-4 col-md-2 text-center">
@@ -88,10 +110,11 @@
                     </a>
                 </div>
             </div>
-            <br/>
+            <br />
         }
     }
-    <hr/>
+    <hr />
+    
 
     <div class="row h5">
         <div class="col-9 col-md-10">
@@ -102,7 +125,7 @@
         </div>
     </div>
 
-    <hr/>
+    <hr />
     @if (Model.Products.Count > 0)
     {
         <div class="row">
@@ -147,9 +170,24 @@
                             <label asp-for="@Model.UseAddress" class="form-check-label"></label>
                         </div>
                     </div>
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-primary w-50">Order now</button>
-                    </div>
+                    @foreach (var item in Model.Products)
+                    {
+                        @foreach (var ingredient in item.ProductsIngridients)
+                        {
+                            if (ingredient.Ingridient.UnitsInStock > 1 && item.Quantity < ingredient.Ingridient.UnitsInStock && ingredient.Ingridient != null)
+                            {
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-primary w-50">Order now</button>
+                                </div>
+
+                            }
+                            else
+                            {
+                                <p>Sorry we don't have enough quantity of this pizza :('</p>
+                            }
+                        }
+                    }
+
                 </form>
             </div>
         </div>

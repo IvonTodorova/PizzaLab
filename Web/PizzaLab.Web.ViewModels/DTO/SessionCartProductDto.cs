@@ -1,24 +1,25 @@
 ﻿namespace PizzaDotNet.Web.ViewModels.DTO
 {
     using PizzaDotNet.Web.ViewModels.Cart;
+    using PizzaLab.Data.Models;
     using PizzaLab.Data.PizzaLab.Data.Models;
     using System.Collections.Generic;
 
     public class SessionCartProductDto
     {
-        private ICollection<Ingrеdient> addedPizzaIngredients;
+        private List<AddedProductIngredients> addedOptionalIngredients;
 
         public SessionCartProductDto()
         {
-            this.addedPizzaIngredients = new HashSet<Ingrеdient>();
+            this.addedOptionalIngredients = new List<AddedProductIngredients>();
         }
 
-        public virtual ICollection<Ingrеdient> AddedPizzaIngredients
+        public virtual List<AddedProductIngredients> AddedOptionalIngredients
         {
-            get { return this.addedPizzaIngredients; }
-            set { this.addedPizzaIngredients = value; }
+            get { return this.addedOptionalIngredients; }
+            set { this.addedOptionalIngredients = value; }
         }
-
+        public int QuantityForIngredients { get; set; }
         public int Id { get; set; }
 
         public string SizeName { get; set; }

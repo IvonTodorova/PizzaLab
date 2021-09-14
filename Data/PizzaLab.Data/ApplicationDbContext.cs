@@ -31,7 +31,7 @@
         public DbSet<Ingrеdient> Ingridients { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<MediaItem> MediaItem { get; set; }
-
+        public DbSet<AddedProductIngredients> AddedProductIngredients { get; set; }
         public override int SaveChanges() => this.SaveChanges(true);
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)

@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using PizzaLab.Data.Models;
     using PizzaLab.Data.PizzaLab.Data.Models;
     using PizzaLab.Data.PizzaLab.Data.Models.Enums;
     using PizzaLab.Services.Mapping;
@@ -10,25 +11,27 @@
     public class CartProductViewModel : IMapFrom<Product>
     {
         private ICollection<MediaItem> mediaItems;
-        public ICollection<ProductsIngridients> productsingridients;
-        private ICollection<Ingrеdient> addedIngredients;
+        public ICollection<ProductsIngridients> Productsingridients;
+        private List<AddedProductIngredients> addedOptionalIngredients;
 
         public CartProductViewModel()
         {
             this.MediaItems = new HashSet<MediaItem>();
-            this.productsingridients = new HashSet<ProductsIngridients>();
-            this.AddedIngredients = new HashSet<Ingrеdient>();
+            this.Productsingridients = new HashSet<ProductsIngridients>();
+            this.addedOptionalIngredients = new List<AddedProductIngredients>();
 
         }
-        public virtual ICollection<Ingrеdient> AddedIngredients
+
+        public virtual List<AddedProductIngredients> AddedOptionalIngredients
         {
-            get { return this.addedIngredients; }
-            set { this.addedIngredients = value; }
+            get { return this.addedOptionalIngredients; }
+            set { this.addedOptionalIngredients = value; }
         }
+
         public virtual ICollection<ProductsIngridients> ProductsIngridients
         {
-            get { return this.productsingridients; }
-            set { this.productsingridients = value; }
+            get { return this.Productsingridients; }
+            set { this.Productsingridients = value; }
         }
 
         public string SizeName { get; set; }

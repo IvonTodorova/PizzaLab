@@ -1,5 +1,5 @@
 ﻿using PizzaLab.Data.PizzaLab.Data.Models;
-
+using PizzaLab.Web.ViewModels.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,8 +15,9 @@ namespace PizzaLab.Services.Data
 
         Task<T> GetById<T> (int id);
 
-        Task<Order> GetBaseById(int id);
+        Task<Order> GetOrderById(int id);
 
         Task UpdateAsync(Order order);
+        void DeleteOrder(OrderDto orderDto);
     }
 }

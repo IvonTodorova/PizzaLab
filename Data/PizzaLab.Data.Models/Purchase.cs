@@ -1,4 +1,5 @@
-﻿using PizzaLab.Data.PizzaLab.Data.Models.Enums;
+﻿using PizzaLab.Data.Models;
+using PizzaLab.Data.PizzaLab.Data.Models.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -9,9 +10,17 @@ namespace PizzaLab.Data.PizzaLab.Data.Models
 {
     public class Purchase
     {
+        private List<AddedProductIngredients> addedOptionalIngredients;
+
         public Purchase()
         {
+            this.addedOptionalIngredients = new List<AddedProductIngredients>();
+        }
 
+        public virtual List<AddedProductIngredients> AddedOptionalIngredients
+        {
+            get { return this.addedOptionalIngredients; }
+            set { this.addedOptionalIngredients = value; }
         }
 
         [Key]
@@ -26,5 +35,10 @@ namespace PizzaLab.Data.PizzaLab.Data.Models
         public virtual PizzaSize PizzaSize { get; set; }
 
         public decimal TotalPrice { get; set; }
+
+        public override string ToString()
+        {
+            return this.Product.Name;
+        }
     }
 }

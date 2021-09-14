@@ -1,4 +1,5 @@
-﻿using PizzaLab.Data.PizzaLab.Data.Models;
+﻿using PizzaLab.Data.Models;
+using PizzaLab.Data.PizzaLab.Data.Models;
 using PizzaLab.Data.PizzaLab.Data.Models.Enums;
 using PizzaLab.Services.Mapping;
 using PizzaLab.Web.ViewModels.Products;
@@ -6,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
+using System.Web.Mvc;
 
 namespace PizzaLab.Web.ViewModels.Products
 {
@@ -14,27 +16,21 @@ namespace PizzaLab.Web.ViewModels.Products
         private ICollection<MediaItem> mediaItems;
         private Dictionary<PizzaSize, decimal> sizes;
         private ICollection<ProductsIngridients> productsingridients;
-        private ICollection<Ingrеdient> optionalIngredients;
-        private ICollection<Ingrеdient> addedPizzaIngredients;
+
+        private List<AddedProductIngredients> addedOptionalIngredients;
 
         public ProductViewModel()
         {
             this.MediaItems = new HashSet<MediaItem>();
             this.sizes = new Dictionary<PizzaSize, decimal>();
             this.ProductsIngridients = new HashSet<ProductsIngridients>();
-            this.OptionaIngredients = new HashSet<Ingrеdient>();
-            this.addedPizzaIngredients = new HashSet<Ingrеdient>();
+            this.addedOptionalIngredients = new List<AddedProductIngredients>();
         }
 
-        public virtual ICollection<Ingrеdient> AddedPizzaIngredients
+        public virtual List<AddedProductIngredients> AddedOptionalIngredients
         {
-            get { return this.addedPizzaIngredients; }
-            set { this.addedPizzaIngredients = value; }
-        }
-        public virtual ICollection<Ingrеdient> OptionaIngredients
-        {
-            get { return this.optionalIngredients; }
-            set { this.optionalIngredients = value; }
+            get { return this.addedOptionalIngredients; }
+            set { this.addedOptionalIngredients = value; }
         }
 
         public virtual ICollection<ProductsIngridients> ProductsIngridients
@@ -48,6 +44,8 @@ namespace PizzaLab.Web.ViewModels.Products
             get { return this.mediaItems; }
             set { this.mediaItems = value; }
         }
+
+        public int IngredientId { get; set; }
 
         [Required]
         public int Id { get; set; }

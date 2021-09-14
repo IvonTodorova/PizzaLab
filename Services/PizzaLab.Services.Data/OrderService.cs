@@ -50,7 +50,6 @@ namespace PizzaLab.Services.Data
                     //TODO DISCHARGE UNIQUE Collection INGREDIENTS FOR EVERY PRODUCT
 
                     this.ingrеdienttRepo.DischargeUnits(unitsForDischage, productIngridient.IngridientId);
-
                 }
 
                 purchase.Order = order;
@@ -67,9 +66,9 @@ namespace PizzaLab.Services.Data
             var order = await this.orderRepository
                  .All()
                  .Where(o => o.Id == id)
+                 .Include(o => o.Purchases).ThenInclude(x => x.AddedOptionalIngredients).ThenInclude(p => p.Ingridient)
                  .To<T>()
                  .FirstOrDefaultAsync();
-
             return order;
         }
 
@@ -94,21 +93,21 @@ namespace PizzaLab.Services.Data
 
         public void DeleteOrder(OrderDto orderDto)
         {
-            var order = this.orderRepository.All().FirstOrDefault(x => x.Id == orderDto.Id);
-            if (order == null)
+            var orderr = this.orderRepository.All().FirstOrDefault(x => x.Id == orderDto.Id);
+
+            if (orderr == null)
             {
-                throw new ArgumentNullException(nameof(orderDto));
+                throw new ArgumentNullException(nameof(orderr));
             }
 
-            this.orderRepository.Delete(order);
+            this.orderRepository.Delete(orderr);
             this.orderRepository.SaveChangesAsync();
         }
 
-        public async Task<Order> GetBaseById(int id)
+        public async Task<Order> GetOrderById(int Id)
         {
-            var order = this.orderRepository.All().Where(x => x.Id == id)
-                .Include(x => x.User).Include(x => x.Purchases).
-                Include(x => x.DateTime).FirstOrDefault();
+            var order = await this.orderRepository.All().Where(x => x.Id == Id)
+                .Include(x => x.User).Include(x => x.Purchases).ThenInclude(x => x.Product).FirstOrDefaultAsync();
 
             return order;
         }

@@ -1,4 +1,5 @@
 ﻿using PizzaLab.Data.Common.Models;
+using PizzaLab.Data.Models;
 using PizzaLab.Data.PizzaLab.Data.Models.Enums;
 using System;
 using System.Collections.Generic;
@@ -9,28 +10,34 @@ namespace PizzaLab.Data.PizzaLab.Data.Models
 {
     public class Product:BaseDeletableModel<int>
     {
+        private List<AddedProductIngredients> addedOptionalIngredients;
+        private ICollection<ProductsIngridients> productsingridients;
+        private ICollection<MediaItem> mediaItems;
+
         public Product()
         {
             this.ProductsIngridients = new HashSet<ProductsIngridients>();
             this.MediaItems = new HashSet<MediaItem>();
+            this.addedOptionalIngredients = new List<AddedProductIngredients>();
         }
-
-        private ICollection<ProductsIngridients> productsingridients;
 
         public virtual ICollection<ProductsIngridients> ProductsIngridients
         {
-            get { return productsingridients; }
-            set { productsingridients = value; }
+            get { return this.productsingridients; }
+            set { this.productsingridients = value; }
         }
-
-        private ICollection<MediaItem> mediaItems;
 
         public virtual ICollection <MediaItem> MediaItems
         {
-            get { return  mediaItems; }
-            set {  mediaItems = value; }
+            get { return this.mediaItems; }
+            set { this.mediaItems = value; }
         }
 
+        public virtual List<AddedProductIngredients> AddedOptionalIngredients
+        {
+            get { return this.addedOptionalIngredients; }
+            set { this.addedOptionalIngredients = value; }
+        }
         public virtual ProductType ProductType { get; set; }
 
         public string Description { get; set; }
@@ -42,5 +49,10 @@ namespace PizzaLab.Data.PizzaLab.Data.Models
         public string Name { get; set; }
 
         public decimal Price { get; set; }
+
+        public override string ToString()
+        {
+            return base.ToString();
+        }
     }
 }

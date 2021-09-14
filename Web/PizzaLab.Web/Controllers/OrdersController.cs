@@ -1,30 +1,34 @@
-﻿namespace PizzaLab.Web.Controllers
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+using AutoMapper;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using PizzaDotNet.Web.ViewModels.DTO;
+using PizzaLab.Common;
+using PizzaLab.Data.Models;
+using PizzaLab.Data.PizzaLab.Data.Models;
+using PizzaLab.Data.PizzaLab.Data.Models.Enums;
+using PizzaLab.Services;
+using PizzaLab.Services.Data;
+using PizzaLab.Web.ViewModels.Cart;
+using PizzaLab.Web.ViewModels.Orders;
+using Syncfusion.Pdf;
+using Syncfusion.Drawing;
+using Syncfusion.Pdf.Grid;
+using System.IO;
+using Syncfusion.Pdf.Graphics;
+using PizzaLab.Web.ViewModels.DTO;
+
+namespace PizzaLab.Web.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-
-    using AutoMapper;
-    using Microsoft.AspNetCore.Identity;
-    using Microsoft.AspNetCore.Mvc;
-    using PizzaDotNet.Web.ViewModels.DTO;
-    using PizzaLab.Common;
-    using PizzaLab.Data.Models;
-    using PizzaLab.Data.PizzaLab.Data.Models;
-    using PizzaLab.Data.PizzaLab.Data.Models.Enums;
-    using PizzaLab.Services;
-    using PizzaLab.Services.Data;
-    using PizzaLab.Web.ViewModels.Cart;
-    using PizzaLab.Web.ViewModels.Orders;
-
     public class OrdersController : BaseController
     {
         private const string ACCESS_DENY_VIEW_ORDER = "You're not allowed to view this order";
         private const string ORDER_CANCELLED = "Your has been cancelled";
         private const string ORDER_CANT_CANCEL = "This order cannot be canceled";
-
-
 
      //   private readonly IEmailSender emailSender;
         private readonly UserManager<ApplicationUser> userManager;
@@ -34,7 +38,7 @@
         private readonly ISessionService sessionService;
         private readonly IProductService productsService;
         private readonly IPurchaseService purchaseService;
-
+        private readonly IIngredientService ingredientsService;
 
         public OrdersController(
             IOrderService ordersService,
@@ -42,7 +46,8 @@
             IProductService productsService,
             UserManager<ApplicationUser> userManager,
             IMapper mapper,
-            IUserAddressService userService)
+            IUserAddressService userService,
+            IIngredientService ingredientsService)
         {
             this.ordersService = ordersService;
             this.sessionService = sessionService;
@@ -50,6 +55,8 @@
             this.userManager = userManager;
             this.mapper = mapper;
             this.userAddressService = userService;
+            this.ingredientsService = ingredientsService;
+
         }
 
         [HttpPost]
@@ -71,7 +78,7 @@
             {
                 var newUserAddress = this.mapper.Map<UserAddress>(inputModel.Address);
                 newUserAddress.PhoneNumber = inputModel.Address.PhoneNumber;
-             //   newUserAddress.ApplicationUserId = user.Id;
+                //newUserAddress.ApplicationUserId = user.Id;
 
                 await this.userAddressService.CreateAsync(newUserAddress);
             }
@@ -105,10 +112,23 @@
                 purchase.Product = product;
                 purchase.Quantity = productDto.Quantity;
                 purchase.PizzaSize = selectedPizzaSize;
+                foreach (var item in cart.Products)
+                {
+
+                    foreach (var item2 in item.AddedOptionalIngredients)
+                    {
+                        var ingredient = this.ingredientsService.GetIngredientById(item2.IngridientId);
+
+
+                        item2.Ingridient = ingredient;
+                        purchase.AddedOptionalIngredients.Add(item2);
+                        purchase.Product.AddedOptionalIngredients.Add(item2);
+                        purchase.TotalPrice += ingredient.PricePerUnit * item2.DischargedUnits;
+                    }
+                }
 
                 purchases.Add(purchase);
             }
-
 
             decimal orderTotalPrice = purchases.Select(p => p.TotalPrice).Sum();
 
@@ -128,12 +148,85 @@
 
             /* Clear session */
             this.sessionService.Set(this.HttpContext.Session, GlobalConstants.SessionCartKey, new SessionCartDto());
+
             if (orderEntity.IsCompleted)
             {
                 return this.RedirectToAction("View", new { orderId = orderEntity.Result.Id });
             }
 
             return this.RedirectToAction("Index", "Home");
+
+        }
+
+        public async Task<IActionResult> CancelOrder(int orderId)
+        {
+           // var userId = this.userManager.GetUserId(this.User);
+
+            var order = await this.ordersService.GetOrderById(orderId);
+
+            // this.ordersService.DeleteOrder(order);
+
+            //  this.sessionService.Set(this.HttpContext.Session, GlobalConstants.SessionCartKey, new SessionCartDto());
+
+            return this.RedirectToAction("CancelOrder", "Orders");
+        }
+
+
+
+        public IActionResult CreateDocument(int orderId)
+        {
+            var order = this.ordersService.GetOrderById(orderId).Result;
+
+            //Create a new PDF document.
+            PdfDocument doc = new PdfDocument();
+            //Add a page.
+            PdfPage page = doc.Pages.Add();
+            //Create a PdfGrid.
+            PdfGrid pdfGrid = new PdfGrid();
+
+
+            //Add values to list
+            List<Order> data = new List<Order>();
+            data.Add(order);
+
+            //Create PDF graphics for the page
+            PdfGraphics graphics = page.Graphics;
+
+            //Set the standard font
+            PdfFont font = new PdfStandardFont(PdfFontFamily.Helvetica, 20);
+
+
+            ////Object row5 = new { , Name = "Gray" };
+            foreach (var purchase in order.Purchases)
+            {
+                //purchase.Product= this.productsService.GetBaseById()
+                ////Draw the text
+                //graphics.DrawString(purchase.Product.ToString(), font, PdfBrushes.Black, new PointF(0, 0));
+
+                //purchase.Product= 
+            }
+
+            //data.Add(purchases);
+            //Add list to IEnumerable
+            IEnumerable<Order> dataTable = data;
+            //Assign data source.
+            pdfGrid.DataSource = dataTable;
+            //Draw grid to the page of PDF document.
+            pdfGrid.Draw(page, new PointF(10, 10));
+            //Save the PDF document to stream
+            MemoryStream stream = new MemoryStream();
+            doc.Save(stream);
+            //If the position is not set to '0' then the PDF will be empty.
+            stream.Position = 0;
+            //Close the document.
+            doc.Close(true);
+            //Defining the ContentType for pdf file.
+            string contentType = "application/pdf";
+            //Define the file name.
+            string fileName = "Output.pdf";
+            //Creates a FileContentResult object by using the file contents, content type, and file name.
+            return File(stream, contentType, fileName);
+            //return this.RedirectToAction("Cart");
         }
 
         public async Task<IActionResult> View (int orderId)
@@ -152,23 +245,6 @@
             }
 
             return this.View(orderViewModel);
-        }
-
-        public async Task<IActionResult> CancelOrder(int orderId)
-        {
-            var userIsAdmin = this.User.IsInRole(GlobalConstants.AdministratorRoleName);
-            var userId = this.userManager.GetUserId(this.User);
-            var order = await this.ordersService.GetById<Order>(orderId);
-
-            /* Prevent people from cancelling others orders */
-            if (!userIsAdmin&& userId!=order.User.Id)
-            {
-                this.TempData["Message"] = ACCESS_DENY_VIEW_ORDER;
-                this.TempData["MessageType"] = AlertMessageTypes.Error;
-                return this.RedirectToAction("Index", "Home");
-            }
-
-            return this.RedirectToAction("View", new { orderId });
         }
     }
 }

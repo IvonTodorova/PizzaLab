@@ -30,5 +30,7 @@ namespace PizzaLab.Data.PizzaLab.Data.Models
         public string Note { get; set; }
 
         public DateTime DateTime { get; set; }
+
+        public bool IsDeletedOrder { get; set; }
     }
 }

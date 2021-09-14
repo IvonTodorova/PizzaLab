@@ -10,7 +10,7 @@ using PizzaLab.Data;
 namespace PizzaLab.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210712082525_InitialCreate")]
+    [Migration("20210909100326_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -123,6 +123,36 @@ namespace PizzaLab.Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
+                });
+
+            modelBuilder.Entity("PizzaLab.Data.Models.AddedProductIngredients", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("DischargedUnits")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IngridientId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PurchaseId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IngridientId");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("PurchaseId");
+
+                    b.ToTable("AddedProductIngredients");
                 });
 
             modelBuilder.Entity("PizzaLab.Data.Models.ApplicationRole", b =>
@@ -343,6 +373,9 @@ namespace PizzaLab.Data.Migrations
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsDeletedOrder")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Note")
                         .HasColumnType("nvarchar(max)");
 
@@ -540,6 +573,25 @@ namespace PizzaLab.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("PizzaLab.Data.Models.AddedProductIngredients", b =>
+                {
+                    b.HasOne("PizzaLab.Data.PizzaLab.Data.Models.Ingrеdient", "Ingridient")
+                        .WithMany()
+                        .HasForeignKey("IngridientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PizzaLab.Data.PizzaLab.Data.Models.Product", null)
+                        .WithMany("AddedOptionalIngredients")
+                        .HasForeignKey("ProductId");
+
+                    b.HasOne("PizzaLab.Data.PizzaLab.Data.Models.Purchase", null)
+                        .WithMany("AddedOptionalIngredients")
+                        .HasForeignKey("PurchaseId");
+
+                    b.Navigation("Ingridient");
+                });
+
             modelBuilder.Entity("PizzaLab.Data.PizzaLab.Data.Models.MediaItem", b =>
                 {
                     b.HasOne("PizzaLab.Data.PizzaLab.Data.Models.Product", "Product")
@@ -626,9 +678,16 @@ namespace PizzaLab.Data.Migrations
 
             modelBuilder.Entity("PizzaLab.Data.PizzaLab.Data.Models.Product", b =>
                 {
+                    b.Navigation("AddedOptionalIngredients");
+
                     b.Navigation("MediaItems");
 
                     b.Navigation("ProductsIngridients");
+                });
+
+            modelBuilder.Entity("PizzaLab.Data.PizzaLab.Data.Models.Purchase", b =>
+                {
+                    b.Navigation("AddedOptionalIngredients");
                 });
 #pragma warning restore 612, 618
         }

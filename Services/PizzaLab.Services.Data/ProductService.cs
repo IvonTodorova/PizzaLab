@@ -52,7 +52,7 @@ namespace PizzaLab.Services.Data
 
         public async Task<Product> GetBaseById(int id)
         {
-            var product = await this.productsRepository.All().FirstOrDefaultAsync(x => x.Id == id);
+            var product = await this.productsRepository.All().Where(x => x.Id == id).Include(x => x.ProductsIngridients).FirstOrDefaultAsync();
 
             return product;
         }

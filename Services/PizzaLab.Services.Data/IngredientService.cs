@@ -26,6 +26,13 @@ namespace PizzaLab.Services.Data
             return idIngredient;
         }
 
+        public decimal SelectedOptionalIngredientPrice(int id)
+        {
+            var ingredientPrice = this.ingredientRepository.All().Where(x => x.Id == id).FirstOrDefault().PricePerUnit;
+
+            return ingredientPrice;
+        }
+
         public void DischargeUnits(int unitsForDischage, int ingridientId)
         {
             var ingredients = this.ingredientRepository.All().Where(x => x.Id == ingridientId && x.UnitsInStock > 0);

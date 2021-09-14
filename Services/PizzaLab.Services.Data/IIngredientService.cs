@@ -11,7 +11,8 @@ namespace PizzaLab.Services.Data
         Ingrеdient GetIngredientById(int id);
 
         public void DischargeUnits(int unitsForDischage, int ingridientId);
+
         public void Update(Ingrеdient ingredient);
-      
+
     }
 }

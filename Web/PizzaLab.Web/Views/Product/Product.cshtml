@@ -13,112 +13,185 @@
 
     var sizesOrdered = Model.Sizes.Keys;
     var sizesDict = Json.Serialize(Model.Sizes);
-    //var sizePizza = Model.SelectedSizeProduct;
+
+
+
+    //var optionaliNGREDIENTSnAMEiD = this.Model.OptionalIngredients.Select(m => new SelectListItem(m.Name, m.Id.ToString()));
+
+
 }
 
 <div class="text-center">
-    <img src="@Url.Content(imgUrl)" alt="Image" class="product-image" />
-    <h4>@Model.Name</h4>
-    <p>@Model.Description</p>
-    <hr />
-    <div class="row">
-            <div class="col-sm">
-                <form id="productOrderForm" method="post" asp-controller="Cart" asp-action="AddItem">
-                    <input asp-for="Id" hidden />
-                    <div id="sizeButtons">
-                        @foreach (var size in sizesOrdered)
-                        {
-                            <div class="form-check form-check-inline">
-                                <input id="product-size-@size"
-                                       class="form-check-input"
-                                       type="radio"
-                                       asp-for="SizeName"
-                                       value="@size">
-                                <label class="form-check-label" asp-for="@size">@size</label>
+        <img src="@Url.Content(imgUrl)" alt="Image" class="product-image" />
+        <h4>@Model.Name</h4>
+        <p>@Model.Description</p>
+        <hr />
+    
+        <form id="productOrderForm" method="post" asp-controller="Cart" asp-action="AddItem">
+                <div class="form-group text-center">
+                    <div class="form-group">
+
+
+                        <div class="form-group text-center">
+
+                            <input asp-for="Id" hidden />
+                            <div id="sizeButtons">
+                                @foreach (var size in sizesOrdered)
+                                {
+                                    <div class="form-check form-check-inline">
+                                        <input id="product-size-@size"
+                                               class="form-check-input"
+                                               type="radio"
+                                               asp-for="SizeName"
+                                               value="@size">
+                                        <label class="form-check-label" asp-for="@size">@size</label>
+                                    </div>
+                                }
+
                             </div>
-                        }
-                        <p>Ingredients: </p>
-                        @foreach (var productsIngridient in Model.ProductsIngridients)
-                        {
-                            <p style="color:orange;">@productsIngridient.Ingridient.Name</p>
-                        }
-                    </div>
 
-                    <span>
-                        Price: <span id="selectedSizePrice"> @Model.Price.ToString("C") </span>
-                        <br />
-                        <span asp - validation -for="SizeName" class="text-danger"></span>
-                    </span>
-                    <hr />
+                            <div>
+                                <p>Ingredients: </p>
+                                @foreach (var productsIngridient in Model.ProductsIngridients)
+                                {
+                                    <p style="color:orange;">@productsIngridient.Ingridient.Name</p>
 
-                    <div class="form-group row">
-                        <label asp-for="Quantity" class="col-2 col-form-label"></label>
-                        <div class="col-10">
-                            <input asp-for="Quantity" min="1" class="form-control form-control-sm" />
+                                }
+                            </div>
+
+                            <table id="options">
+                                @for (int i = 0; i < Model.AddedOptionalIngredients.Count; i++)
+                                {
+                                    <tr>
+                                        <td style="width:25%">
+                                            @Html.DisplayFor(modelItem => Model.AddedOptionalIngredients[i].Ingridient.Name)
+                                            <input asp-for="AddedOptionalIngredients[i].IngridientId"hidden />
+                                        </td>
+                                        <td>
+                                            <span id="ingredientPrice">
+                                                @Html.DisplayFor(modelItem => Model.AddedOptionalIngredients[i].Ingridient.PricePerUnit)
+                                                <input asp-for="AddedOptionalIngredients[i].Ingridient"hidden />
+                                            </span>
+                                            <span>$</span>
+                                        </td>
+                                        <td>
+                                            1 @Html.DisplayFor(modelItem => Model.AddedOptionalIngredients[i].Ingridient.MeasureType)
+                                        </td>
+                                        <td>
+                                            <div class="text-center">
+                                                <label asp-for="AddedOptionalIngredients[i].DischargedUnits"></label>
+                                                <input id="dischargedUnitsValue" asp-for="AddedOptionalIngredients[i].DischargedUnits" min="0" class="form-control" />
+                                                <span asp-validation-for="AddedOptionalIngredients[i].DischargedUnits"></span>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                }
+                            </table>
+                            <div>
+                                <span>
+                                    Price: <span id="selectedSizePrice"> @Model.Price.ToString("C") </span>
+                                    <br />
+                                    <span asp - validation -for="SizeName" class="text-danger"></span>
+                                </span>
+                                <hr />
+                            </div>
+
+                            <div class="text-center">
+                                <label asp-for="Quantity"></label>
+                                <input asp-for="Quantity" min="1" class="form-control" />
+                                <span asp-validation-for="Quantity"></span>
+                            </div>
+                            <hr />
+
+                            @if (!User.Identity.IsAuthenticated)
+                            {
+                                <p>
+                                    <a class="font-weight-bold" asp-area="Identity" asp-page="/Account/Login">Login</a> to place an order
+                                </p>
+                            }
+
+                            else
+                            {
+                                @foreach (var productsIngridient in Model.ProductsIngridients)
+                                {
+                                    if (productsIngridient.Ingridient.UnitsInStock < 1)
+                                    {
+                                        <p style="color:red;"> Im sorry: (There isn't enough quantity. Choose another pizza, we have huge choice for every taste :))' </p>
+                                    }
+                                    else
+                                    {
+                                        <input type="submit" value="Add to cart" class="btn btn btn-outline-secondary" />
+                                        <hr />
+                                    }
+
+                                }
+                            }
+                            <p class="h5">
+                                Total: <span id="modified-product-price">1</span> x <span id="product-quantity"></span> = <span id="product-total"></span>
+                            </p>
+                            <hr />
+                            <div asp-validation-summary="All">
+                            </div>
                         </div>
-                        <span asp-validation-for="Quantity" class="text-danger"></span>
-                    </div>
-                    <hr />
-                    <p class="h5">
-                        Total: <span id="product-price"> 1 </span> x <span id="product-quantity"></span> = <span id="product-total">
-                        </span>
-                    </p>
-                    @if (!User.Identity.IsAuthenticated)
-                    {
-                        <p>
-                            <a class="font-weight-bold" asp-area="Identity" asp-page="/Account/Login">Login</a> to place an order
-                        </p>
-                    }
-                    else
-                    {
-                        <input type="submit" value="Add to cart" class="btn btn btn-outline-secondary" />
-                    }
-                    <hr />
-                    <div asp-validation-summary="All"></div>
-                </form>
-            </div>
-            <div class="col-sm">
-                <form id="selectedIngredient" method="post" asp-controller="Product" asp-action="AddOptionalIngredient">
-                    <input asp-for="Id" hidden />
-                    <input asp-for="AddedPizzaIngredients" hidden />
+                                <hr />
 
-                    <div class="row">
-                        <input type="submit" value=" +" class="btn btn-outline-secondary btn-sm" />
+                                <style>
+                                    table {
+                                        border-collapse: collapse;
+                                    }
 
-                        @Html.DropDownListFor(m => m.SelectedIngrеdientId, Model.OptionaIngredients.Select(m => new SelectListItem { Text = m.Name, Value = m.Id.ToString() }), "Select a ingredient...", new { @style = "width:200px; margin-left:2%" })
-                    </div>
-                </form>
+                                    td, th {
+                                        border: 1px solid #dddddd;
+                                        text - align: left;
+                                        padding: 8px;
+                                    }
+                                </style>
+                            </div>
+                        </div>
+                    </form> 
+               @section Scripts
+                        {
+                          <script >
 
-                <p>Optional Ingredients: </p>
-                @foreach (var addedPizzaIngredient in Model.AddedPizzaIngredients)
-                {
-                    <p style="color:orange;">@addedPizzaIngredient.Name</p>
-                }
-            </div>
-    </div>
+                           let productSizes = @sizesDict;
 
-    @section Scripts{
-          <script >
-        let productSizes = @sizesDict;
-        @*let pizzaSelectedSize =@sizePizza;*@
-            $(document).ready(() =>
-            {
-                //Track for size or quantity change
-                $('#productOrderForm').change(function(){
-                    const selectedSize = $('input[name="SizeName"]:checked').val();
-                    let price = productSizes[selectedSize];
-                    let quantity = $('input[name=Quantity]').val();
+                            $(document).ready(() =>
+                                            {
+                              //Track for size or quantity change
+                              $('#productOrderForm').change(function(){
+                              const selectedSize = $('input[name="SizeName"]:checked').val();
+                              let price = productSizes[selectedSize];
+                              let quantity = $('input[name=Quantity]').val();
 
-                    const sizePriceDiv = $('#product-price').text(price)
-                    const selectedSizePriceDiv = $('#selectedSizePrice').text(price);
-                    const quantityPriceDiv = $('#product-quantity').text(quantity);
-                    const productTotalPriceDiv = $('#product-total').text(price * quantity);
+                              var totalPriceForProduct = 0;
+                              var table = document.getElementById("options");
+                                  
+                               for (var i = 0, row; row = table.rows[i]; i++) {
+                                   var rowSum = 0;
 
-                })
-            });
+                                    for (var j = 1, col; col = row.cells[j]; j = j+2)
+                                    {
+                                        if (col.innerText == "DischargedUnits") {
+                                            var dischargedUnits = Number(col.getElementsByTagName('input')[0].value);
+                                            rowSum = rowSum * dischargedUnits;
+                                        }
+                                        else {
+                                            rowSum = parseInt(col.innerText.split(" ")[0]);
+                                        }
+                                   }
 
-              //function ddListChange() {
-              //    document.getElementById("demo").innerHTML = "Hello World";
-              //}
-        </script>
-    }
+                                   totalPriceForProduct += rowSum;
+                                }
+
+                              const sizePriceDiv = $('#modified-product-price').text((price + totalPriceForProduct));
+                              const selectedSizePriceDiv = $('#selectedSizePrice').text(price);
+                              const quantityPriceDiv = $('#product-quantity').text(quantity);
+                              const productTotalPriceDiv = $('#product-total').text((price + totalPriceForProduct) * quantity);
+
+
+                             })
+                             });
+                                       
+                         </script>
+                         }

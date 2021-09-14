@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PizzaDotNet.Web.ViewModels.DTO;
 using PizzaLab.Common;
+using PizzaLab.Data.Models;
 using PizzaLab.Data.PizzaLab.Data.Models;
 using PizzaLab.Services;
 using PizzaLab.Services.Data;
@@ -16,11 +17,16 @@ namespace PizzaLab.Web.Controllers
 {
     public class ProductController : BaseController
     {
+        private const string CART_ADD_PRODUCT = "Product added to cart";
+        private const string CART_REMOVE_PRODUCT = "Product removed from cart";
+        private const string CART_INVALID_ITEM = "Invalid item";
+
         private readonly IProductService productsService;
         private readonly IMapper mapper;
         private readonly IProductIngredientService productIngredientRepo;
         private readonly IIngredientService ingredientsService;
         private readonly ISessionService sessionService;
+
         public ProductController(
             IProductService productService,
             IMapper mapper,
@@ -41,39 +47,35 @@ namespace PizzaLab.Web.Controllers
             var productViewModel = await this.productsService.GetById<ProductViewModel>(id);
             productViewModel.PopulateSizesAndPrices();
 
+
             //optionalIngredients
             List<ProductsIngridients> productIngridientsOptional = this.productIngredientRepo.GetAllOptionalIngredient().ToList();
 
             //add optional ingredients to product view model
-            productViewModel.OptionaIngredients = new List<Ingrеdient>();
-            var addedPizzaIngredientsBuffAsString = TempData["AddedPizzaIngredients"];
-            if (addedPizzaIngredientsBuffAsString != null )
-            {
-                List<Ingrеdient> addedPizzaIngredientsBuff = JsonSerializer.Deserialize<List<Ingrеdient>>(addedPizzaIngredientsBuffAsString.ToString());
-                productViewModel.AddedPizzaIngredients = addedPizzaIngredientsBuff;
-            }
-            else
-            {
-                productViewModel.AddedPizzaIngredients = new List<Ingrеdient>();
-            }
+            productViewModel.AddedOptionalIngredients = new List<AddedProductIngredients>();
+
 
             foreach (var productIngridientOptional in productIngridientsOptional)
             {
                 //add optional ingredients in the product view model and get the ingredient by id 
-                var optionalIngredient = this.ingredientsService.GetIngredientById(productIngridientOptional.IngridientId);
-                productViewModel.OptionaIngredients.Add(optionalIngredient);
+                var ingredient = this.ingredientsService.GetIngredientById(productIngridientOptional.IngridientId);
 
-                //var add = GetAddedIngredient(optionalIngredient);
+                AddedProductIngredients optionalIngredient = new AddedProductIngredients()
+                {
+                    DischargedUnits = 0,
+                    IngridientId = ingredient.Id,
+                    Ingridient = ingredient,
+                };
 
-                //productViewModel.AddedPizzaIngredients.Add(add);
+
+                productViewModel.AddedOptionalIngredients.Add(optionalIngredient);
             }
 
             //add ingredient for the list ot ingredients in the product
-            foreach (var productIngredient in productViewModel.ProductsIngridients)
-            {
-                productIngredient.Ingridient = this.ingredientsService.GetIngredientById(productIngredient.IngridientId);
-
-            }
+            //foreach (var productIngredient in productViewModel.ProductsIngridients)
+            //{
+            //    productIngredient.Ingridient = this.ingredientsService.GetIngredientById(productIngredient.IngridientId);
+            //}
 
             if (productViewModel == null)
             {
@@ -82,41 +84,5 @@ namespace PizzaLab.Web.Controllers
 
             return this.View(productViewModel);
         }
-
-        [Route("[controller]/AddOptionalIngredient")]
-        public IActionResult AddOptionalIngredient(ProductViewModel productViewItem)
-        {
-            int id = int.Parse(productViewItem.SelectedIngrеdientId);
-            var selectedIgredient = this.ingredientsService.GetIngredientById(id);
-            productViewItem.AddedPizzaIngredients.Add(selectedIgredient);
-            TempData["AddedPizzaIngredients"] = JsonSerializer.Serialize(productViewItem.AddedPizzaIngredients);
-            return this.RedirectToAction("Product", new { id = productViewItem.Id });
-        }
-
-        public IActionResult DecreaseItemQuantity(int itemId)
-        {
-            var cart = this.sessionService.Get<SessionCartDto>(this.HttpContext.Session, GlobalConstants.SessionCartKey);
-
-            cart.Products.FindAll(x => x.Id == itemId && x.Quantity > 1).ForEach(x => x.Quantity--);
-
-            this.sessionService.Set(this.HttpContext.Session, GlobalConstants.SessionCartKey, cart);
-
-            return this.RedirectToAction("Cart");
-        }
-
-
-
-        //public Ingrеdient GetAddedIngredient(Ingrеdient ingredient)
-        //{
-        //    var getingredientbyId = this.ingredientsService.GetIngredientById(ingredient.Id);
-
-        //    if (getingredientbyId.UnitsInStock>0)
-        //    {
-        //        getingredientbyId.UnitsInStock--;
-        //        this.ingredientsService.Update(ingredient);
-        //    }
-
-        //    return getingredientbyId;
-        //}
     }
 }

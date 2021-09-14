@@ -3,11 +3,13 @@
     using AutoMapper;
     using PizzaDotNet.Web.ViewModels.Cart;
     using PizzaDotNet.Web.ViewModels.DTO;
+    using PizzaLab.Data.Models;
     using PizzaLab.Data.PizzaLab.Data.Models;
     using PizzaLab.Web.ViewModels.Cart;
     using PizzaLab.Web.ViewModels.DTO;
     using PizzaLab.Web.ViewModels.Orders;
     using PizzaLab.Web.ViewModels.Products;
+    using PizzaLab.Web.ViewModels.Purchases;
 
     public class AutoMapping : Profile
     {
@@ -55,6 +57,10 @@
             this.CreateMap<Product, Purchase>();
             this.CreateMap<Purchase, Product>();
 
+            ///* Product <-> OrderProduct */
+            this.CreateMap<Purchase, PurchaseViewModel>();
+            this.CreateMap<PurchaseViewModel, Purchase>();
+
             ///* Order <-> OrderViewModel */
             this.CreateMap<Order, OrderViewModel>();
             this.CreateMap<OrderViewModel, Order>();
@@ -62,6 +68,16 @@
             ///* Order <-> OrderDto */
             this.CreateMap<Order, OrderDto>();
             this.CreateMap<OrderDto, Order>();
+
+
+            this.CreateMap<ProductViewModel, CartProductViewModel>();
+            this.CreateMap<CartProductViewModel, ProductViewModel>();
+
+            //this.CreateMap<ProductViewModel,Cart>();
+            //this.CreateMap<Cart,ProductViewModel>();
+
+            //  this.CreateMap<Order, Order>();
+            //this.CreateMap<Order, Order>();
 
             ///* OrderProduct <-> AdminOrderProductViewModel */
             //this.CreateMap<OrderProduct, AdminOrderProductViewModel>();

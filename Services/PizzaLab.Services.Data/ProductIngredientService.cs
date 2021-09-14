@@ -1,6 +1,7 @@
 ﻿using PizzaLab.Data.Common.Repositories;
 using PizzaLab.Data.PizzaLab.Data.Models;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,8 +27,13 @@ namespace PizzaLab.Services.Data
 
         public IEnumerable<ProductsIngridients> GetAllOptionalIngredient()
         {
-            var optionalIngredients = this.productIngredientRepository.All().Where(x => x.IsOptionalForAddingAProduct == true);
-            return optionalIngredients;
+            var optionalIngredients = this.productIngredientRepository.All().Where(x => x.IsOptionalForAddingAProduct == true).ToList();
+
+            var optionalDistinct = optionalIngredients.Distinct(new ProductIngredientsComparer());
+            return optionalDistinct;
         }
+
+
+
     }
 }

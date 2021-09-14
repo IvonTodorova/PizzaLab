@@ -5,12 +5,12 @@
     using System.ComponentModel.DataAnnotations;
     using System.Linq;
     using System.Threading.Tasks;
-
+    using PizzaLab.Data.Models;
     using PizzaLab.Data.PizzaLab.Data.Models;
+    using PizzaLab.Services.Mapping;
 
-    public class OrderDto
+    public class OrderDto : IMapFrom<Order>
     {
-
         private ICollection<Purchase> purchase;
 
         public virtual ICollection<Purchase> Purchases
@@ -22,7 +22,7 @@
         [Key]
         public int Id { get; set; }
 
-        public virtual UserAddress User { get; set; }
+        public virtual ApplicationUser User { get; set; }
 
         public decimal OrderTotalValue { get; set; }
 

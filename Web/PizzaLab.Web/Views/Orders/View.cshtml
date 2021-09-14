@@ -27,11 +27,47 @@
                     <td>@purchase.Price</td>
                     <td>@purchase.TotalPrice</td>
                 </tr>
+
             }
+            <div>
+                <span>Added Ingredients</span>
+                <table id="options">
+                    @foreach (var purchase in Model.Purchases)
+                    {
+
+                        @for (int i = 0; i < purchase.AddedOptionalIngredients.Count; i++)
+                        {
+                            if (purchase.AddedOptionalIngredients[i].DischargedUnits > 0)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => purchase.AddedOptionalIngredients[i].Ingridient.Name)
+                                    </td>
+                                    <td>
+                                        <span>
+                                            @Html.DisplayFor(modelItem => purchase.AddedOptionalIngredients[i].DischargedUnits)
+                                        </span>
+                                        <span>x</span>
+                                    </td>
+
+                                    <td>
+                                        <span>
+                                            @Html.DisplayFor(modelItem => purchase.AddedOptionalIngredients[i].Ingridient.PricePerUnit)
+                                        </span>
+                                        <span>$</span>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    }
+                </table>
+
             <tr>
                 <th scope="row" colspan="3" class="text-right">Total: </th>
                 <th scope="row">@Model.TotalPrice</th>
             </tr>
+</div>
+
         </tbody>
     </table>
     <div class="text-center">
@@ -49,9 +85,21 @@
         </p>
         <hr />
         @*@if (Model.OrderStatus.Status == OrderStatusEnum.Processing.ToString())
-        {*@
-            <a role="button" class="btn btn-danger"
-               asp-controller="Orders" asp-action="CancelOrder" asp-route-orderId="@Model.Id">Cancel order</a>
+            {*@
+        <a role="button" class="btn btn-danger"
+           asp-controller="Orders" asp-action="CancelOrder" asp-route-orderId="@Model.Id">Cancel order</a>
         @*}*@
+
+
     </div>
+
+    <div style="width:150px;height:40px">
+        <p>
+            <a role="button" class="btn btn-outline-secondary"
+               asp-controller="Orders" asp-action="CreateDocument" asp-route-orderId="@Model.Id">
+                Create Document
+            </a>
+        </p>
+    </div>
+
 </div>
